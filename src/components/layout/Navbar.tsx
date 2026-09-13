@@ -14,14 +14,17 @@ export const Navbar: React.FC = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-rose-100">
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-[#E5C158]/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        {/* Logo Minimalista */}
+        {/* Logo com Degradê Dourado */}
         <Link
           to="/"
           className="text-xl font-light tracking-widest text-zinc-800 uppercase"
         >
-          Studio <span className="font-semibold text-rose-500">Nail</span>
+          Studio{" "}
+          <span className="font-semibold bg-linear-to-r from-[#D4AF37] to-[#997A15] bg-clip-text text-transparent">
+            Nail
+          </span>
         </Link>
 
         {/* Links Desktop Centralizados */}
@@ -30,18 +33,18 @@ export const Navbar: React.FC = () => {
             <Link
               key={link.name}
               to={link.path}
-              className="text-sm font-medium text-zinc-600 hover:text-rose-500 transition-colors duration-200"
+              className="text-sm font-medium text-zinc-600 hover:text-[#D4AF37] transition-colors duration-200"
             >
               {link.name}
             </Link>
           ))}
         </nav>
 
-        {/* CTA Button */}
+        {/* CTA Button Dourado Luxo */}
         <div className="hidden md:block">
           <Link
             to="/contato"
-            className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white text-sm font-medium px-5 py-2.5 rounded-full transition-all duration-300 shadow-sm hover:shadow-rose-200 hover:shadow-lg"
+            className="flex items-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] hover:opacity-90 text-zinc-950 font-medium text-sm px-5 py-2.5 rounded-full transition-all duration-300 shadow-md hover:shadow-[#D4AF37]/20"
           >
             <Calendar size={16} />
             Agendar Horário
@@ -51,7 +54,7 @@ export const Navbar: React.FC = () => {
         {/* Mobile Menu Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-zinc-700 hover:text-rose-500 focus:outline-none"
+          className="md:hidden text-zinc-700 hover:text-[#D4AF37] focus:outline-none"
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -59,13 +62,13 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Menu Dropdown */}
       {isOpen && (
-        <div className="md:hidden bg-white border-b border-rose-100 px-4 pt-2 pb-6 space-y-3 shadow-md">
+        <div className="md:hidden bg-white border-b border-[#E5C158]/30 px-4 pt-2 pb-6 space-y-3 shadow-md">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.path}
               onClick={() => setIsOpen(false)}
-              className="block text-base font-medium text-zinc-700 hover:text-rose-500 py-2 border-b border-zinc-50"
+              className="block text-base font-medium text-zinc-700 hover:text-[#D4AF37] py-2 border-b border-zinc-50"
             >
               {link.name}
             </Link>
@@ -74,7 +77,7 @@ export const Navbar: React.FC = () => {
             <Link
               to="/contato"
               onClick={() => setIsOpen(false)}
-              className="flex items-center justify-center gap-2 w-full bg-rose-500 text-white text-sm font-medium py-3 rounded-xl shadow-sm"
+              className="flex items-center justify-center gap-2 w-full bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm py-3 rounded-xl shadow-sm"
             >
               <Calendar size={16} />
               Agendar Horário
