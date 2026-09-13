@@ -24,7 +24,7 @@ export const Home: React.FC = () => {
                 <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-transparent flex items-end p-6">
                   <div className="text-white">
                     <p className="text-xs uppercase tracking-widest text-[#E5C158] font-medium">
-                      Studio Nail
+                      Marcele Machado
                     </p>
                     <p className="text-lg font-light">Excelência e Detalhes</p>
                   </div>
