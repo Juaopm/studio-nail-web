@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
           {/* Coluna 1: Sobre a Marca */}
           <div className="space-y-4">
             <h3 className="text-lg font-light tracking-widest text-white uppercase">
-              Studio <span className="font-semibold text-[#D4AF37]">Nail</span>
+              MA <span className="font-semibold text-[#D4AF37]">Nails</span>
             </h3>
             <p className="text-sm text-zinc-400 leading-relaxed">
               Transformando o cuidado com as suas unhas em uma experiência única
@@ -108,8 +108,8 @@ export const Footer: React.FC = () => {
         {/* Linha Divisória Inferior e Autoria */}
         <div className="mt-12 pt-8 border-t border-zinc-900 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-4">
           <p>
-            © {new Date().getFullYear()} Studio Nail. Todos os direitos
-            reservados.
+            © {new Date().getFullYear()} Marcele Machado Nails. Todos os
+            direitos reservados.
           </p>
           <p className="flex items-center gap-1">
             Desenvolvido com{" "}
