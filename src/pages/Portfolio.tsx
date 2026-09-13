@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ZoomIn, Plus } from "lucide-react";
 
 export const Portfolio: React.FC = () => {
@@ -26,7 +27,12 @@ export const Portfolio: React.FC = () => {
   return (
     <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Cabeçalho da Seção */}
-      <div className="text-center space-y-4 mb-16">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-center space-y-4 mb-16"
+      >
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E5C158]/15 text-[#997A15] text-xs font-medium tracking-wide uppercase">
           <Sparkles size={14} />
           <span>Galeria de Trabalhos</span>
@@ -41,13 +47,18 @@ export const Portfolio: React.FC = () => {
           Conheça a nossa galeria com registros de todos os procedimentos
           realizados. Precisão, técnica e durabilidade em cada detalhe.
         </p>
-      </div>
+      </motion.div>
 
       {/* Grid Organizado de Fotos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {visibleItems.map((item) => (
-          <div
+        {visibleItems.map((item, index) => (
+          <motion.div
             key={item.id}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: (index % 12) * 0.05 }}
+            whileHover={{ scale: 1.02 }}
             onClick={() => setSelectedImage(item.url)}
             className="group relative h-80 rounded-2xl overflow-hidden shadow-md bg-zinc-100 cursor-pointer border border-zinc-200/60"
           >
@@ -64,42 +75,60 @@ export const Portfolio: React.FC = () => {
                 <ZoomIn size={18} className="text-[#E5C158]" />
               </h3>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Botão Carregar Mais */}
       {visibleCount < allPortfolioItems.length && (
-        <div className="mt-12 flex justify-center">
-          <button
-            onClick={handleLoadMore}
-            className="flex items-center gap-2 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 font-medium text-sm px-8 py-3.5 rounded-full transition-all duration-300 shadow-sm"
-          >
-            <Plus size={16} className="text-[#D4AF37]" />
-            Carregar Mais Fotos ({allPortfolioItems.length - visibleCount}{" "}
-            restantes)
-          </button>
-        </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-12 flex justify-center"
+        >
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <button
+              onClick={handleLoadMore}
+              className="flex items-center gap-2 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 font-medium text-sm px-8 py-3.5 rounded-full transition-all duration-300 shadow-sm cursor-pointer"
+            >
+              <Plus size={16} className="text-[#D4AF37]" />
+              Carregar Mais Fotos ({allPortfolioItems.length -
+                visibleCount}{" "}
+              restantes)
+            </button>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* Modal Lightbox para Ampliar a Imagem */}
-      {selectedImage && (
-        <div
-          onClick={() => setSelectedImage(null)}
-          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer"
-        >
-          <div className="relative max-w-4xl w-full max-h-[90vh] flex items-center justify-center">
-            <img
-              src={selectedImage}
-              alt="Visualização Ampliada"
-              className="max-h-[85vh] max-w-full rounded-lg object-contain shadow-2xl border border-zinc-800"
-            />
-            <span className="absolute top-4 right-4 text-white text-xs bg-zinc-800/80 px-3 py-1.5 rounded-full">
-              Clique em qualquer lugar para fechar
-            </span>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-4xl w-full max-h-[90vh] flex items-center justify-center"
+            >
+              <img
+                src={selectedImage}
+                alt="Visualização Ampliada"
+                className="max-h-[85vh] max-w-full rounded-lg object-contain shadow-2xl border border-zinc-800"
+              />
+              <span className="absolute top-4 right-4 text-white text-xs bg-zinc-800/80 px-3 py-1.5 rounded-full">
+                Clique em qualquer lugar para fechar
+              </span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

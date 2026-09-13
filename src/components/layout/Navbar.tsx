@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { Menu, X, Calendar } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { Calendar, Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   const navLinks = [
     { name: "Início", path: "/" },
@@ -13,78 +15,102 @@ export const Navbar: React.FC = () => {
     { name: "Contato", path: "/contato" },
   ];
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-[#E5C158]/30">
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-zinc-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-        {/* Logo com Degradê Dourado */}
+        {/* Logo */}
         <Link
           to="/"
-          className="text-xl font-light tracking-widest text-zinc-800 uppercase"
+          className="text-xl font-light tracking-widest text-zinc-900 uppercase"
         >
-          Studio{" "}
-          <span className="font-semibold bg-linear-to-r from-[#D4AF37] to-[#997A15] bg-clip-text text-transparent">
-            Nail
-          </span>
+          Studio <span className="font-semibold text-[#D4AF37]">Nail</span>
         </Link>
 
-        {/* Links Desktop Centralizados */}
-        <nav className="hidden md:flex items-center space-x-8">
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center space-x-8 text-sm font-light">
           {navLinks.map((link) => (
             <Link
-              key={link.name}
+              key={link.path}
               to={link.path}
-              className="text-sm font-medium text-zinc-600 hover:text-[#D4AF37] transition-colors duration-200"
+              className={`transition-colors duration-200 relative py-1 ${
+                isActive(link.path)
+                  ? "text-[#997A15] font-medium"
+                  : "text-zinc-600 hover:text-zinc-900"
+              }`}
             >
               {link.name}
+              {isActive(link.path) && (
+                <motion.div
+                  layoutId="underline"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#D4AF37]"
+                />
+              )}
             </Link>
           ))}
         </nav>
 
-        {/* CTA Button Dourado Luxo */}
+        {/* CTA Desktop */}
         <div className="hidden md:block">
-          <Link
-            to="/contato"
-            className="flex items-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] hover:opacity-90 text-zinc-950 font-medium text-sm px-5 py-2.5 rounded-full transition-all duration-300 shadow-md hover:shadow-[#D4AF37]/20"
-          >
-            <Calendar size={16} />
-            Agendar Horário
-          </Link>
+          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+            <Link
+              to="/contato"
+              className="flex items-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 text-xs font-medium px-5 py-2.5 rounded-full shadow-md hover:opacity-90 transition-opacity"
+            >
+              <Calendar size={14} />
+              Agendar Horário
+            </Link>
+          </motion.div>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Botão Menu Mobile */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden text-zinc-700 hover:text-[#D4AF37] focus:outline-none"
+          className="md:hidden text-zinc-800 focus:outline-none p-2"
+          aria-label="Menu"
         >
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      {/* Mobile Menu Dropdown */}
-      {isOpen && (
-        <div className="md:hidden bg-white border-b border-[#E5C158]/30 px-4 pt-2 pb-6 space-y-3 shadow-md">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              onClick={() => setIsOpen(false)}
-              className="block text-base font-medium text-zinc-700 hover:text-[#D4AF37] py-2 border-b border-zinc-50"
-            >
-              {link.name}
-            </Link>
-          ))}
-          <div className="pt-2">
-            <Link
-              to="/contato"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center justify-center gap-2 w-full bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm py-3 rounded-xl shadow-sm"
-            >
-              <Calendar size={16} />
-              Agendar Horário
-            </Link>
-          </div>
-        </div>
-      )}
+      {/* Menu Mobile Fluído com Framer Motion */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="md:hidden overflow-hidden bg-white border-b border-zinc-200 px-6 pt-4 pb-6 space-y-4 shadow-xl"
+          >
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setIsOpen(false)}
+                className={`block text-base font-light transition-colors ${
+                  isActive(link.path)
+                    ? "text-[#997A15] font-medium"
+                    : "text-zinc-700"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+            <div className="pt-2">
+              <Link
+                to="/contato"
+                onClick={() => setIsOpen(false)}
+                className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 text-sm font-medium py-3 rounded-xl shadow-md"
+              >
+                <Calendar size={16} />
+                Agendar Horário
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

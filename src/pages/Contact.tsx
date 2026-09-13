@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 import {
   Sparkles,
   MessageCircle,
@@ -26,7 +27,12 @@ export const Contact: React.FC = () => {
   };
 
   return (
-    <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-full py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto"
+    >
       {/* Cabeçalho da Seção */}
       <div className="text-center space-y-4 mb-16">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E5C158]/15 text-[#997A15] text-xs font-medium tracking-wide uppercase">
@@ -90,15 +96,17 @@ export const Contact: React.FC = () => {
           </div>
 
           <div className="pt-6 border-t border-zinc-800">
-            <a
-              href="https://wa.me/555191103238"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm py-3.5 rounded-xl hover:opacity-90 transition-all duration-300 shadow-md"
-            >
-              <MessageCircle size={18} />
-              Chamar Direto no WhatsApp
-            </a>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <a
+                href="https://wa.me/555191103238"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm py-3.5 rounded-xl hover:opacity-90 transition-all duration-300 shadow-md"
+              >
+                <MessageCircle size={18} />
+                Chamar Direto no WhatsApp
+              </a>
+            </motion.div>
           </div>
         </div>
 
@@ -114,7 +122,7 @@ export const Contact: React.FC = () => {
               </h3>
               <p className="text-zinc-600 font-light text-sm max-w-md mx-auto">
                 Recebemos os seus dados. Entraremos em contato em breve para
-                confirmar o seu horário no Studio Nail.
+                confirmar o seu horário no MA Machado Nails.
               </p>
               <button
                 onClick={() => setSubmitted(false)}
@@ -218,17 +226,22 @@ export const Contact: React.FC = () => {
                 />
               </div>
 
-              <button
-                type="submit"
-                className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm py-4 rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#D4AF37]/20"
+              <motion.div
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
               >
-                <Send size={16} />
-                Solicitar Agendamento
-              </button>
+                <button
+                  type="submit"
+                  className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm py-4 rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#D4AF37]/20"
+                >
+                  <Send size={16} />
+                  Solicitar Agendamento
+                </button>
+              </motion.div>
             </form>
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

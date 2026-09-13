@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Sparkles, Calendar } from "lucide-react";
 
 export const Services: React.FC = () => {
@@ -10,7 +11,7 @@ export const Services: React.FC = () => {
       description:
         "Alongamento com molde F1 de alta precisão e acabamento impecável, incluindo esmaltação em gel.",
       price: "149,90",
-      highlight: true, // Destacando o principal ou mais procurado
+      highlight: true,
     },
     {
       id: 2,
@@ -18,7 +19,7 @@ export const Services: React.FC = () => {
       description:
         "Alongamento premium com fibra de vidro, garantindo máxima resistência, durabilidade e esmaltação em gel.",
       price: "189,90",
-      highlight: true, // Destacando o principal ou mais procurado
+      highlight: true,
     },
     {
       id: 3,
@@ -65,7 +66,12 @@ export const Services: React.FC = () => {
   return (
     <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       {/* Cabeçalho da Seção */}
-      <div className="text-center space-y-4 mb-16">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-center space-y-4 mb-16"
+      >
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E5C158]/15 text-[#997A15] text-xs font-medium tracking-wide uppercase">
           <Sparkles size={14} />
           <span>Tabela de Procedimentos</span>
@@ -80,14 +86,19 @@ export const Services: React.FC = () => {
           Escolha o procedimento ideal para cuidar da sua beleza e autoestima
           com produtos de altíssima qualidade e esterilização rigorosa.
         </p>
-      </div>
+      </motion.div>
 
       {/* Grid de Serviços */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
         {servicesList.map((service) => (
-          <div
+          <motion.div
             key={service.id}
-            className={`relative rounded-2xl p-8 flex flex-col justify-between transition-all duration-300 border ${
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.15 }}
+            whileHover={{ y: -5, transition: { duration: 0.15 } }}
+            className={`relative rounded-2xl p-8 flex flex-col justify-between transition-colors duration-300 border ${
               service.highlight
                 ? "bg-linear-to-br from-zinc-900 to-zinc-950 text-white border-[#D4AF37]/50 shadow-xl shadow-zinc-900/10"
                 : "bg-white text-zinc-800 border-zinc-200/80 shadow-md hover:border-[#D4AF37]/40"
@@ -126,24 +137,35 @@ export const Services: React.FC = () => {
                 </span>
               </div>
 
-              <Link
-                to="/contato"
-                className={`flex items-center gap-1.5 text-xs font-medium px-4 py-2.5 rounded-full transition-all duration-300 ${
-                  service.highlight
-                    ? "bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 hover:opacity-90"
-                    : "bg-zinc-100 hover:bg-[#D4AF37] hover:text-zinc-950 text-zinc-800"
-                }`}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Calendar size={14} />
-                Agendar
-              </Link>
+                <Link
+                  to="/contato"
+                  className={`flex items-center gap-1.5 text-xs font-medium px-4 py-2.5 rounded-full transition-all duration-300 ${
+                    service.highlight
+                      ? "bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 hover:opacity-90"
+                      : "bg-zinc-100 hover:bg-[#D4AF37] hover:text-zinc-950 text-zinc-800"
+                  }`}
+                >
+                  <Calendar size={14} />
+                  Agendar
+                </Link>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
       {/* Seção Informativa de Diferenciais */}
-      <div className="bg-linear-to-r from-[#FBF9F1] via-amber-50/30 to-zinc-50 rounded-2xl p-8 sm:p-12 border border-[#E5C158]/30 flex flex-col md:flex-row items-center justify-between gap-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="bg-linear-to-r from-[#FBF9F1] via-amber-50/30 to-zinc-50 rounded-2xl p-8 sm:p-12 border border-[#E5C158]/30 flex flex-col md:flex-row items-center justify-between gap-8"
+      >
         <div className="space-y-3 text-center md:text-left">
           <h3 className="text-2xl font-light text-zinc-900">
             Dúvidas sobre qual procedimento escolher?
@@ -154,14 +176,20 @@ export const Services: React.FC = () => {
           </p>
         </div>
 
-        <Link
-          to="/contato"
-          className="shrink-0 flex items-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm px-8 py-3.5 rounded-full hover:opacity-90 transition-all duration-300 shadow-md"
+        <motion.div
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          className="shrink-0"
         >
-          <Sparkles size={16} />
-          Falar com a Profissional
-        </Link>
-      </div>
+          <Link
+            to="/contato"
+            className="flex items-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm px-8 py-3.5 rounded-full hover:opacity-90 transition-all duration-300 shadow-md"
+          >
+            <Sparkles size={16} />
+            Falar com a Profissional
+          </Link>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Sparkles, Calendar, Store } from "lucide-react";
+import { motion } from "framer-motion";
 import perfilImg from "../assets/perfil.jpg";
 import studioImg from "../assets/studio.jpg";
 
@@ -8,7 +9,12 @@ export const About: React.FC = () => {
   return (
     <div className="min-h-full py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-16">
       {/* Cabeçalho da Seção */}
-      <div className="text-center space-y-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-center space-y-4"
+      >
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E5C158]/15 text-[#997A15] text-xs font-medium tracking-wide uppercase">
           <Sparkles size={14} />
           <span>Muito prazer, eu sou a Marcele</span>
@@ -23,11 +29,17 @@ export const About: React.FC = () => {
           Por trás de cada alongamento, de cada atendimento e de cada detalhe
           existe uma mulher que sonha, trabalha, ama e está sempre em movimento.
         </p>
-      </div>
+      </motion.div>
 
       {/* Seção 1: História Principal */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-        <div className="lg:col-span-5 flex justify-center">
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="lg:col-span-5 flex justify-center"
+        >
           <div className="relative w-72 h-96 sm:w-80 sm:h-105 rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
             <img
               src={perfilImg}
@@ -35,9 +47,15 @@ export const About: React.FC = () => {
               className="w-full h-full object-cover"
             />
           </div>
-        </div>
+        </motion.div>
 
-        <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="lg:col-span-7 space-y-6 text-center lg:text-left"
+        >
           <h2 className="text-2xl sm:text-3xl font-light text-zinc-900">
             Acredito que o sucesso é construído{" "}
             <span className="font-medium text-[#997A15]">todos os dias</span>.
@@ -83,11 +101,17 @@ export const About: React.FC = () => {
               </span>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Seção 2: O Studio Físico */}
-      <div className="bg-linear-to-br from-zinc-900 to-zinc-950 text-white rounded-3xl p-8 sm:p-12 border border-[#D4AF37]/30 shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7 }}
+        className="bg-linear-to-br from-zinc-900 to-zinc-950 text-white rounded-3xl p-8 sm:p-12 border border-[#D4AF37]/30 shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-10 items-center"
+      >
         <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#E5C158]/15 text-[#E5C158] text-xs font-medium tracking-wide uppercase">
             <Store size={14} />
@@ -107,13 +131,19 @@ export const About: React.FC = () => {
             você em um espaço feito com amor e sofisticação.
           </p>
           <div className="pt-2">
-            <Link
-              to="/contato"
-              className="inline-flex items-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm px-8 py-3.5 rounded-full hover:opacity-95 transition-all duration-300 shadow-md"
+            <motion.div
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-block"
             >
-              <Calendar size={16} />
-              Agendar Meu Horário
-            </Link>
+              <Link
+                to="/contato"
+                className="inline-flex items-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm px-8 py-3.5 rounded-full hover:opacity-95 transition-all duration-300 shadow-md"
+              >
+                <Calendar size={16} />
+                Agendar Meu Horário
+              </Link>
+            </motion.div>
           </div>
         </div>
 
@@ -126,7 +156,7 @@ export const About: React.FC = () => {
             />
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
