@@ -5,13 +5,14 @@ import { Portfolio } from "./pages/Portfolio";
 import { Services } from "./pages/Services";
 import { About } from "./pages/About";
 import { Contact } from "./pages/Contact";
+import { Footer } from "./components/layout/Footer";
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-zinc-50 text-zinc-800 flex flex-col font-sans">
         <Navbar />
-        <main className="flex-row">
+        <main className="grow">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/portfolio" element={<Portfolio />} />
@@ -20,6 +21,7 @@ function App() {
             <Route path="/contato" element={<Contact />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </Router>
   );
