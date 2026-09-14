@@ -21,11 +21,10 @@ export const Navbar: React.FC = () => {
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-zinc-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Logo */}
-        <Link
-          to="/"
-          className="text-xl font-light tracking-widest text-zinc-900 uppercase"
-        >
-          Studio <span className="font-semibold text-[#D4AF37]">Nail</span>
+        <Link to="/" className="flex items-center gap-2 group">
+          <span className="font-['Pinyon_Script'] text-5xl sm:text-6xl text-[#D4AF37] tracking-wider drop-shadow-xs">
+            Ma
+          </span>
         </Link>
 
         {/* Desktop Nav */}
