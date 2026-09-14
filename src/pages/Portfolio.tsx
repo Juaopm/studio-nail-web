@@ -1,8 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, ZoomIn, Plus, Loader2 } from "lucide-react";
 
+interface PortfolioItem {
+  id: number;
+  title: string;
+  category: string;
+  imageUrl: string;
+}
+
 export const Portfolio: React.FC = () => {
+  // Estado para armazenar os itens vindos da API
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   // Estado para controlar quantas fotos são exibidas por vez
   const [visibleCount, setVisibleCount] = useState(12);
 
@@ -12,22 +23,28 @@ export const Portfolio: React.FC = () => {
   // Estado de carregamento do botão "Carregar Mais"
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  // Simulação da lista completa com as 70 fotos
-  const allPortfolioItems = Array.from({ length: 70 }, (_, index) => ({
-    id: index + 1,
-    title: `Trabalho Exclusivo #${index + 1}`,
-    url: `https://images.unsplash.com/photo-${1600000000000 + index * 154321}?auto=format&fit=crop&w=800&q=80`,
-  }));
+  // Buscar os dados do back-end Spring Boot ao carregar o componente
+  useEffect(() => {
+    fetch("http://localhost:8080/api/portfolio")
+      .then((response) => response.json())
+      .then((data) => {
+        setPortfolioItems(data);
+        setIsLoading(false);
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar portfólio:", error);
+        setIsLoading(false);
+      });
+  }, []);
 
   // Itens atualmente visíveis com base no contador
-  const visibleItems = allPortfolioItems.slice(0, visibleCount);
+  const visibleItems = portfolioItems.slice(0, visibleCount);
 
   const handleLoadMore = () => {
     setIsLoadingMore(true);
 
-    // Simulando o tempo de requisição/carregamento
     setTimeout(() => {
-      setVisibleCount((prev) => Math.min(prev + 12, allPortfolioItems.length));
+      setVisibleCount((prev) => Math.min(prev + 12, portfolioItems.length));
       setIsLoadingMore(false);
     }, 800);
   };
@@ -57,67 +74,81 @@ export const Portfolio: React.FC = () => {
         </p>
       </motion.div>
 
-      {/* Grid Organizado de Fotos */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {visibleItems.map((item, index) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 1, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: (index % 12) * 0.05 }}
-            whileHover={{ scale: 1.02 }}
-            onClick={() => setSelectedImage(item.url)}
-            className="group relative h-80 rounded-2xl overflow-hidden shadow-md bg-zinc-100 cursor-pointer border border-zinc-200/60"
-          >
-            <img
-              src={item.url}
-              alt={item.title}
-              loading="lazy"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            />
-            {/* Overlay ao passar o mouse */}
-            <div className="absolute inset-0 bg-linear-to-t from-zinc-950/80 via-zinc-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-              <h3 className="text-white text-sm font-light flex items-center justify-between">
-                <span>{item.title}</span>
-                <ZoomIn size={18} className="text-[#E5C158]" />
-              </h3>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+      {/* Estado de Carregamento Inicial da API */}
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20 gap-3">
+          <Loader2 size={32} className="animate-spin text-[#D4AF37]" />
+          <p className="text-sm text-zinc-500 font-light">
+            Carregando trabalhos do estúdio...
+          </p>
+        </div>
+      ) : (
+        <>
+          {/* Grid Organizado de Fotos */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {visibleItems.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 1, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: (index % 12) * 0.05 }}
+                whileHover={{ scale: 1.02 }}
+                onClick={() => setSelectedImage(item.imageUrl)}
+                className="group relative h-80 rounded-2xl overflow-hidden shadow-md bg-zinc-100 cursor-pointer border border-zinc-200/60"
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={item.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                {/* Overlay ao passar o mouse */}
+                <div className="absolute inset-0 bg-linear-to-t from-zinc-950/80 via-zinc-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                  <h3 className="text-white text-sm font-light flex items-center justify-end">
+                    <ZoomIn size={18} className="text-[#E5C158]" />
+                  </h3>
+                </div>
+              </motion.div>
+            ))}
+          </div>
 
-      {/* Botão Carregar Mais */}
-      {visibleCount < allPortfolioItems.length && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="mt-12 flex justify-center"
-        >
-          <motion.div
-            whileHover={!isLoadingMore ? { scale: 1.03 } : {}}
-            whileTap={!isLoadingMore ? { scale: 0.97 } : {}}
-          >
-            <button
-              onClick={handleLoadMore}
-              disabled={isLoadingMore}
-              className="flex items-center gap-2 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 font-medium text-sm px-8 py-3.5 rounded-full transition-all duration-300 shadow-sm cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+          {/* Botão Carregar Mais */}
+          {visibleCount < portfolioItems.length && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              className="mt-12 flex justify-center"
             >
-              {isLoadingMore ? (
-                <>
-                  <Loader2 size={16} className="animate-spin text-[#D4AF37]" />
-                  Carregando trabalhos...
-                </>
-              ) : (
-                <>
-                  <Plus size={16} className="text-[#D4AF37]" />
-                  Carregar mais trabalhos
-                </>
-              )}
-            </button>
-          </motion.div>
-        </motion.div>
+              <motion.div
+                whileHover={!isLoadingMore ? { scale: 1.03 } : {}}
+                whileTap={!isLoadingMore ? { scale: 0.97 } : {}}
+              >
+                <button
+                  onClick={handleLoadMore}
+                  disabled={isLoadingMore}
+                  className="flex items-center gap-2 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 font-medium text-sm px-8 py-3.5 rounded-full transition-all duration-300 shadow-sm cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
+                >
+                  {isLoadingMore ? (
+                    <>
+                      <Loader2
+                        size={16}
+                        className="animate-spin text-[#D4AF37]"
+                      />
+                      Carregando trabalhos...
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={16} className="text-[#D4AF37]" />
+                      Carregar mais trabalhos
+                    </>
+                  )}
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </>
       )}
 
       {/* Modal Lightbox para Ampliar a Imagem */}
