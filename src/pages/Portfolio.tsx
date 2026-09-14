@@ -1,29 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ZoomIn, Plus, Loader2 } from "lucide-react";
+import { Sparkles, ZoomIn, Plus, Loader2, Calendar, Tag } from "lucide-react";
 
 interface PortfolioItem {
   id: number;
   title: string;
-  category: string;
+  category?: string;
+  technique?: string;
+  customDate?: string;
   imageUrl: string;
 }
 
 export const Portfolio: React.FC = () => {
-  // Estado para armazenar os itens vindos da API
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Estado para controlar quantas fotos são exibidas por vez
   const [visibleCount, setVisibleCount] = useState(12);
 
-  // Estado para o Modal Lightbox da foto selecionada
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  // Estado alterado para guardar o objeto inteiro do item selecionado (ou null)
+  const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
 
-  // Estado de carregamento do botão "Carregar Mais"
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  // Buscar os dados do back-end Spring Boot ao carregar o componente
   useEffect(() => {
     fetch("http://localhost:8080/api/portfolio")
       .then((response) => response.json())
@@ -37,12 +34,10 @@ export const Portfolio: React.FC = () => {
       });
   }, []);
 
-  // Itens atualmente visíveis com base no contador
   const visibleItems = portfolioItems.slice(0, visibleCount);
 
   const handleLoadMore = () => {
     setIsLoadingMore(true);
-
     setTimeout(() => {
       setVisibleCount((prev) => Math.min(prev + 12, portfolioItems.length));
       setIsLoadingMore(false);
@@ -74,7 +69,7 @@ export const Portfolio: React.FC = () => {
         </p>
       </motion.div>
 
-      {/* Estado de Carregamento Inicial da API */}
+      {/* Estado de Carregamento Inicial */}
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-20 gap-3">
           <Loader2 size={32} className="animate-spin text-[#D4AF37]" />
@@ -84,7 +79,7 @@ export const Portfolio: React.FC = () => {
         </div>
       ) : (
         <>
-          {/* Grid Organizado de Fotos */}
+          {/* Grid Organizado de Fotos com Hover Limpo */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {visibleItems.map((item, index) => (
               <motion.div
@@ -94,7 +89,7 @@ export const Portfolio: React.FC = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: (index % 12) * 0.05 }}
                 whileHover={{ scale: 1.02 }}
-                onClick={() => setSelectedImage(item.imageUrl)}
+                onClick={() => setSelectedItem(item)}
                 className="group relative h-80 rounded-2xl overflow-hidden shadow-md bg-zinc-100 cursor-pointer border border-zinc-200/60"
               >
                 <img
@@ -103,11 +98,11 @@ export const Portfolio: React.FC = () => {
                   loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
-                {/* Overlay ao passar o mouse */}
-                <div className="absolute inset-0 bg-linear-to-t from-zinc-950/80 via-zinc-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                  <h3 className="text-white text-sm font-light flex items-center justify-end">
-                    <ZoomIn size={18} className="text-[#E5C158]" />
-                  </h3>
+                {/* Overlay Limpo com Círculo de Zoom */}
+                <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-white/90 shadow-lg flex items-center justify-center text-[#D4AF37] transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                    <ZoomIn size={22} />
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -151,30 +146,69 @@ export const Portfolio: React.FC = () => {
         </>
       )}
 
-      {/* Modal Lightbox para Ampliar a Imagem */}
+      {/* Modal Lightbox com Mini Card Condicional */}
       <AnimatePresence>
-        {selectedImage && (
+        {selectedItem && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => setSelectedImage(null)}
-            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 cursor-pointer"
+            onClick={() => setSelectedItem(null)}
+            className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative max-w-4xl w-full max-h-[90vh] flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-fit max-w-4xl max-h-[90vh] flex items-center justify-center"
             >
-              <img
-                src={selectedImage}
-                alt="Visualização Ampliada"
-                className="max-h-[85vh] max-w-full rounded-lg object-contain shadow-2xl border border-zinc-800"
-              />
-              <span className="absolute top-4 right-4 text-white text-xs bg-zinc-800/80 px-3 py-1.5 rounded-full">
-                Clique em qualquer lugar para fechar
-              </span>
+              {/* Container interno que abraça a imagem */}
+              <div className="relative inline-block max-h-[85vh] overflow-hidden rounded-xl shadow-2xl border border-zinc-800">
+                <img
+                  src={selectedItem.imageUrl}
+                  alt={selectedItem.title}
+                  className="max-h-[85vh] max-w-full block object-contain"
+                />
+
+                {/* O card só aparece se houver técnica, categoria ou data preenchidas no banco */}
+                {(() => {
+                  const hasDetails =
+                    selectedItem.technique ||
+                    selectedItem.category ||
+                    selectedItem.customDate;
+
+                  if (!hasDetails) return null;
+
+                  return (
+                    <div className="absolute bottom-4 left-4 bg-zinc-900/75 backdrop-blur-md border border-white/10 px-4 py-3 rounded-xl shadow-2xl text-white max-w-xs space-y-1 pointer-events-none">
+                      {(selectedItem.technique || selectedItem.category) && (
+                        <p className="text-xs text-zinc-300 flex items-center gap-1.5 font-light">
+                          <Tag size={12} className="text-[#D4AF37]" />
+                          {[selectedItem.technique, selectedItem.category]
+                            .filter(Boolean)
+                            .join(" • ")}
+                        </p>
+                      )}
+
+                      {selectedItem.customDate && (
+                        <p className="text-xs text-zinc-400 flex items-center gap-1.5 font-light">
+                          <Calendar size={12} className="text-zinc-500" />
+                          {selectedItem.customDate}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* Botão de Fechar Discreto */}
+              <button
+                onClick={() => setSelectedItem(null)}
+                className="absolute top-2 right-2 text-xs text-zinc-400 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 px-3.5 py-2 rounded-full border border-white/10 transition-colors z-10"
+              >
+                ✕ Fechar
+              </button>
             </motion.div>
           </motion.div>
         )}
