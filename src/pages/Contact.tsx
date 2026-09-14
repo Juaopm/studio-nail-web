@@ -66,31 +66,39 @@ export const Contact: React.FC = () => {
 
           <div className="space-y-6 text-sm">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center text-[#D4AF37] shrink-0 mt-0.5">
-                <MapPin size={20} />
-              </div>
-              <div>
-                <strong className="block font-medium text-white">
-                  Localização
-                </strong>
-                <span className="text-zinc-400 font-light">
-                  Av Assis Brasil 3532, sala 609 — Centro Comercial Lindóia,
-                  Porto Alegre - RS
-                </span>
-              </div>
+              <a
+                href="https://www.google.com/maps/place/Marcele+Machado+Nails+Designer+-+ALONGAMENTO+DE+UNHAS+PORTO+ALEGRE/@-30.0100247,-51.1519321,17z/data=!3m1!4b1!4m6!3m5!1s0x9519771a0efe56a1:0xa092649d900b5110!8m2!3d-30.0100247!4d-51.1519321!16s%2Fg%2F11zdb_y9lj?entry=ttu&g_ep=EgoyMDI2MDkwOS4wIKXMDSoASAFQAw%3D%3D"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-4 group text-left"
+              >
+                <div className="p-3 rounded-xl bg-zinc-800 text-[#D4AF37] shrink-0 mt-0.5">
+                  {/* Ícone de localização */}
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-semibold text-white group-hover:text-[#D4AF37] transition-colors">
+                    Localização
+                  </h4>
+                  <p className="text-sm text-zinc-400 mt-1 leading-relaxed">
+                    Av Assis Brasil 3532, sala 609 — Centro Comercial Lindóia,
+                    Porto Alegre - RS
+                  </p>
+                </div>
+              </a>
             </div>
 
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center text-[#D4AF37] shrink-0 mt-0.5">
-                <Clock size={20} />
+            <div className="flex items-center gap-4 text-left">
+              <div className="p-3 rounded-xl bg-zinc-800 text-[#D4AF37] shrink-0">
+                <Clock className="w-5 h-5" />
               </div>
               <div>
-                <strong className="block font-medium text-white">
+                <h4 className="text-sm font-semibold text-white">
                   Horário de Funcionamento
-                </strong>
-                <span className="text-zinc-400 font-light">
+                </h4>
+                <p className="text-sm text-zinc-400">
                   Segunda a Sábado: das 08:00 às 19:30
-                </span>
+                </p>
               </div>
             </div>
           </div>

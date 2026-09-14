@@ -103,11 +103,21 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-3 text-sm text-zinc-400">
               <li className="flex items-start gap-3">
-                <MapPin size={18} className="text-[#D4AF37] shrink-0 mt-0.5" />
-                <span>
-                  Av Assis Brasil 3532, sala 609 - centro comercial Lindóia,
-                  Porto Alegre.
-                </span>
+                <a
+                  href="https://www.google.com/maps/place/Marcele+Machado+Nails+Designer+-+ALONGAMENTO+DE+UNHAS+PORTO+ALEGRE/@-30.0100247,-51.1519321,17z/data=!3m1!4b1!4m6!3m5!1s0x9519771a0efe56a1:0xa092649d900b5110!8m2!3d-30.0100247!4d-51.1519321!16s%2Fg%2F11zdb_y9lj?entry=ttu&g_ep=EgoyMDI2MDkwOS4wIKXMDSoASAFQAw%3D%3D"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-3 text-zinc-400 hover:text-[#D4AF37] transition-colors group"
+                >
+                  <span className="text-[#D4AF37] mt-1 shrink-0">
+                    {/* Ícone de localização */}
+                    <MapPin className="w-5 h-5" />
+                  </span>
+                  <span>
+                    Av Assis Brasil 3532, sala 609 - centro comercial Lindóia,
+                    Porto Alegre.
+                  </span>
+                </a>
               </li>
               <li className="flex items-start gap-3">
                 <Clock size={18} className="text-[#D4AF37] shrink-0 mt-0.5" />
