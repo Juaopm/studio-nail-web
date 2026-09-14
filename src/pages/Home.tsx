@@ -73,7 +73,9 @@ export const Home: React.FC = () => {
                     <p className="text-xs uppercase tracking-widest text-[#E5C158] font-medium">
                       Marcele Machado
                     </p>
-                    <p className="text-lg font-light">Excelência e Detalhes</p>
+                    <p className="text-lg font-light">
+                      Seu estilo, em cada detalhe.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -91,16 +93,15 @@ export const Home: React.FC = () => {
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight text-zinc-900">
-                A arte de transformar <br />
+                Suas unhas. <br />
                 <span className="font-semibold bg-linear-to-r from-[#D4AF37] via-[#B89728] to-zinc-900 bg-clip-text text-transparent">
-                  suas unhas em joias.
+                  Sua assinatura.
                 </span>
               </h1>
 
               <p className="text-base sm:text-lg text-zinc-600 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
-                Cada atendimento é pensado para realçar sua beleza natural e
-                elevar sua autoestima. Técnicas avançadas de alongamento,
-                blindagem e *nail art* com produtos de altíssima qualidade.
+                Alongamento, blindagem e nail art com técnicas precisas e design
+                pensado para o seu estilo.
               </p>
 
               <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
@@ -114,7 +115,7 @@ export const Home: React.FC = () => {
                     className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] hover:opacity-90 text-zinc-950 font-medium text-sm px-8 py-3.5 rounded-full transition-all shadow-lg shadow-[#D4AF37]/20"
                   >
                     <Calendar size={18} />
-                    Agendar Meu Horário
+                    Agendar meu horário
                   </Link>
                 </motion.div>
 
@@ -127,7 +128,7 @@ export const Home: React.FC = () => {
                     to="/portfolio"
                     className="w-full flex items-center justify-center gap-2 bg-white hover:bg-zinc-100 text-zinc-800 border border-zinc-200 text-sm font-medium px-8 py-3.5 rounded-full transition-all"
                   >
-                    <span>Ver Portfólio</span>
+                    <span>Ver portfólio</span>
                     <ArrowRight size={16} />
                   </Link>
                 </motion.div>
@@ -277,7 +278,7 @@ export const Home: React.FC = () => {
                 to="/servicos"
                 className="inline-flex items-center gap-2 bg-zinc-900 text-white text-sm font-medium px-8 py-3.5 rounded-full hover:bg-zinc-800 transition-all shadow-md"
               >
-                <span>Ver Tabela Completa de Serviços</span>
+                <span>Ver tabela completa de serviços</span>
                 <ArrowRight size={16} />
               </Link>
             </motion.div>
@@ -297,14 +298,13 @@ export const Home: React.FC = () => {
           >
             <div className="space-y-3">
               <h2 className="text-2xl sm:text-3xl font-light text-white">
-                O carinho das nossas{" "}
+                O carinho de quem já viveu{" "}
                 <span className="font-semibold text-[#E5C158]">
-                  clientes no WhatsApp
+                  essa experiência.
                 </span>
               </h2>
               <p className="text-zinc-400 font-light text-sm max-w-md">
-                Clique e arraste para o lado para conferir os prints reais com
-                os feedbacks sobre nossos atendimentos.
+                Confira alguns dos feedbacks que recebemos pelo WhatsApp.
               </p>
             </div>
 

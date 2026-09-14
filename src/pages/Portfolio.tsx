@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ZoomIn, Plus } from "lucide-react";
+import { Sparkles, ZoomIn, Plus, Loader2 } from "lucide-react";
 
 export const Portfolio: React.FC = () => {
   // Estado para controlar quantas fotos são exibidas por vez
@@ -9,11 +9,13 @@ export const Portfolio: React.FC = () => {
   // Estado para o Modal Lightbox da foto selecionada
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  // Simulação da lista completa com as 70 fotos (aqui você pode mapear os arquivos reais depois)
+  // Estado de carregamento do botão "Carregar Mais"
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+  // Simulação da lista completa com as 70 fotos
   const allPortfolioItems = Array.from({ length: 70 }, (_, index) => ({
     id: index + 1,
     title: `Trabalho Exclusivo #${index + 1}`,
-    // Usando imagens de exemplo em alta qualidade; depois é só trocar pelos imports locais ou caminhos públicos
     url: `https://images.unsplash.com/photo-${1600000000000 + index * 154321}?auto=format&fit=crop&w=800&q=80`,
   }));
 
@@ -21,7 +23,13 @@ export const Portfolio: React.FC = () => {
   const visibleItems = allPortfolioItems.slice(0, visibleCount);
 
   const handleLoadMore = () => {
-    setVisibleCount((prev) => Math.min(prev + 12, allPortfolioItems.length));
+    setIsLoadingMore(true);
+
+    // Simulando o tempo de requisição/carregamento
+    setTimeout(() => {
+      setVisibleCount((prev) => Math.min(prev + 12, allPortfolioItems.length));
+      setIsLoadingMore(false);
+    }, 800);
   };
 
   return (
@@ -54,7 +62,7 @@ export const Portfolio: React.FC = () => {
         {visibleItems.map((item, index) => (
           <motion.div
             key={item.id}
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 1, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: (index % 12) * 0.05 }}
@@ -87,15 +95,26 @@ export const Portfolio: React.FC = () => {
           viewport={{ once: true }}
           className="mt-12 flex justify-center"
         >
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+          <motion.div
+            whileHover={!isLoadingMore ? { scale: 1.03 } : {}}
+            whileTap={!isLoadingMore ? { scale: 0.97 } : {}}
+          >
             <button
               onClick={handleLoadMore}
-              className="flex items-center gap-2 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 font-medium text-sm px-8 py-3.5 rounded-full transition-all duration-300 shadow-sm cursor-pointer"
+              disabled={isLoadingMore}
+              className="flex items-center gap-2 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 font-medium text-sm px-8 py-3.5 rounded-full transition-all duration-300 shadow-sm cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
             >
-              <Plus size={16} className="text-[#D4AF37]" />
-              Carregar Mais Fotos ({allPortfolioItems.length -
-                visibleCount}{" "}
-              restantes)
+              {isLoadingMore ? (
+                <>
+                  <Loader2 size={16} className="animate-spin text-[#D4AF37]" />
+                  Carregando trabalhos...
+                </>
+              ) : (
+                <>
+                  <Plus size={16} className="text-[#D4AF37]" />
+                  Carregar mais trabalhos
+                </>
+              )}
             </button>
           </motion.div>
         </motion.div>

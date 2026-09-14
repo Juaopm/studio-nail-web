@@ -125,10 +125,8 @@ export const About: React.FC = () => {
             .
           </h2>
           <p className="text-zinc-400 font-light text-sm sm:text-base leading-relaxed">
-            Localizado no Centro Comercial Lindóia, o Studio MA Nails foi
-            pensado milimetricamente para proporcionar uma experiência
-            intimista, higienizada e acolhedora. Venha tomar um café e cuidar de
-            você em um espaço feito com amor e sofisticação.
+            um espaço pensado para proporcionar uma experiência intimista,
+            segura e acolhedora, com todo o cuidado com higiene e conforto.
           </p>
           <div className="pt-2">
             <motion.div
@@ -141,7 +139,7 @@ export const About: React.FC = () => {
                 className="inline-flex items-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm px-8 py-3.5 rounded-full hover:opacity-95 transition-all duration-300 shadow-md"
               >
                 <Calendar size={16} />
-                Agendar Meu Horário
+                Agendar meu horário
               </Link>
             </motion.div>
           </div>

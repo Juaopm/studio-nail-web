@@ -21,8 +21,7 @@ export const Footer: React.FC = () => {
               <span className="font-semibold text-[#D4AF37]">Nails</span>
             </h3>
             <p className="text-sm text-zinc-400 leading-relaxed">
-              Transformando o cuidado com as suas unhas em uma experiência única
-              de elegância, autoestima e sofisticação.
+              Técnica, cuidado e personalidade em cada atendimento.
             </p>
             <div className="flex items-center space-x-4 pt-2">
               <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>

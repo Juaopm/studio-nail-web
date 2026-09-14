@@ -7,6 +7,7 @@ import {
   Clock,
   Send,
   CheckCircle2,
+  Loader2,
 } from "lucide-react";
 
 export const Contact: React.FC = () => {
@@ -18,12 +19,28 @@ export const Contact: React.FC = () => {
     notes: "",
   });
 
-  const [submitted, setSubmitted] = useState(false);
+  // Estados de controle para a interação refinada do botão
+  const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui você pode montar a lógica para disparar direto pro WhatsApp ou salvar no back-end depois
-    setSubmitted(true);
+    setStatus("loading");
+
+    // Simulando o tempo de processamento (que futuramente será a chamada ao Spring Boot)
+    setTimeout(() => {
+      setStatus("success");
+    }, 1500);
+  };
+
+  const handleReset = () => {
+    setStatus("idle");
+    setFormData({
+      name: "",
+      phone: "",
+      service: "Fibra de Vidro",
+      date: "",
+      notes: "",
+    });
   };
 
   return (
@@ -73,7 +90,6 @@ export const Contact: React.FC = () => {
                 className="flex items-start gap-4 group text-left"
               >
                 <div className="p-3 rounded-xl bg-zinc-800 text-[#D4AF37] shrink-0 mt-0.5">
-                  {/* Ícone de localização */}
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
@@ -112,7 +128,7 @@ export const Contact: React.FC = () => {
                 className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm py-3.5 rounded-xl hover:opacity-90 transition-all duration-300 shadow-md"
               >
                 <MessageCircle size={18} />
-                Chamar Direto no WhatsApp
+                Chamar direto no WhatsApp
               </a>
             </motion.div>
           </div>
@@ -120,25 +136,80 @@ export const Contact: React.FC = () => {
 
         {/* Coluna Direita: Formulário de Solicitação */}
         <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-2xl border border-zinc-200/80 shadow-md">
-          {submitted ? (
-            <div className="py-16 text-center space-y-4">
-              <div className="w-16 h-16 bg-[#E5C158]/15 text-[#997A15] rounded-full flex items-center justify-center mx-auto">
-                <CheckCircle2 size={32} />
-              </div>
-              <h3 className="text-2xl font-light text-zinc-900">
-                Solicitação Enviada!
-              </h3>
-              <p className="text-zinc-600 font-light text-sm max-w-md mx-auto">
-                Recebemos os seus dados. Entraremos em contato em breve para
-                confirmar o seu horário no MA Machado Nails.
-              </p>
-              <button
-                onClick={() => setSubmitted(false)}
-                className="mt-6 text-xs font-medium text-[#997A15] hover:underline uppercase tracking-wider"
+          {status === "success" ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.4 }}
+              className="py-16 text-center space-y-4"
+            >
+              {/* Ícone de sucesso */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="w-16 h-16 bg-[#E5C158]/15 text-[#997A15] rounded-full flex items-center justify-center mx-auto"
               >
-                Enviar nova solicitação
-              </button>
-            </div>
+                <motion.div
+                  initial={{ scale: 0.6, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{
+                    duration: 0.3,
+                    delay: 0.15,
+                    ease: "easeOut",
+                  }}
+                >
+                  <CheckCircle2 size={32} />
+                </motion.div>
+              </motion.div>
+
+              {/* Conteúdo */}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.35,
+                  delay: 0.25,
+                  ease: "easeOut",
+                }}
+                className="space-y-4"
+              >
+                <h3 className="text-2xl font-light text-zinc-900">
+                  Solicitação recebida!
+                </h3>
+
+                <p className="text-zinc-600 font-light text-sm max-w-md mx-auto">
+                  Vamos verificar a disponibilidade da data escolhida e
+                  entraremos em contato para confirmar seu atendimento.
+                </p>
+              </motion.div>
+
+              {/* Ações e mensagem final */}
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.35,
+                  delay: 0.4,
+                  ease: "easeOut",
+                }}
+                className="flex flex-col items-center gap-4"
+              >
+                <motion.button
+                  onClick={handleReset}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="mt-4 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-zinc-200 bg-white text-[#997A15] text-xs font-medium uppercase tracking-wider hover:border-[#D4AF37] hover:bg-[#E5C158]/10 transition-all duration-300"
+                >
+                  <span className="text-base leading-none">＋</span>
+                  Enviar nova solicitação
+                </motion.button>
+
+                <p className="text-xs text-zinc-400 font-light italic">
+                  Será um prazer cuidar de você. ✨
+                </p>
+              </motion.div>
+            </motion.div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -149,12 +220,13 @@ export const Contact: React.FC = () => {
                   <input
                     type="text"
                     required
+                    disabled={status === "loading"}
                     placeholder="Digite seu nome completo"
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors"
+                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors disabled:bg-zinc-50 disabled:text-zinc-400"
                   />
                 </div>
 
@@ -165,12 +237,13 @@ export const Contact: React.FC = () => {
                   <input
                     type="tel"
                     required
+                    disabled={status === "loading"}
                     placeholder="(51) 99999-9999"
                     value={formData.phone}
                     onChange={(e) =>
                       setFormData({ ...formData, phone: e.target.value })
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors"
+                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors disabled:bg-zinc-50 disabled:text-zinc-400"
                   />
                 </div>
               </div>
@@ -181,11 +254,12 @@ export const Contact: React.FC = () => {
                     Procedimento Desejado
                   </label>
                   <select
+                    disabled={status === "loading"}
                     value={formData.service}
                     onChange={(e) =>
                       setFormData({ ...formData, service: e.target.value })
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors bg-white"
+                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors bg-white disabled:bg-zinc-50 disabled:text-zinc-400"
                   >
                     <option value="Molde F1">Molde F1 (R$ 149,90)</option>
                     <option value="Fibra de Vidro">
@@ -205,16 +279,18 @@ export const Contact: React.FC = () => {
 
                 <div className="space-y-2">
                   <label className="block text-xs font-medium text-zinc-700 uppercase tracking-wider">
-                    Data Preferida
+                    Data preferida para atendimento
                   </label>
                   <input
                     type="date"
                     required
+                    disabled={status === "loading"}
+                    placeholder="Selecione a data desejada"
                     value={formData.date}
                     onChange={(e) =>
                       setFormData({ ...formData, date: e.target.value })
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors"
+                    className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors disabled:bg-zinc-50 disabled:text-zinc-400"
                   />
                 </div>
               </div>
@@ -225,25 +301,36 @@ export const Contact: React.FC = () => {
                 </label>
                 <textarea
                   rows={4}
+                  disabled={status === "loading"}
                   placeholder="Tem alguma preferência de horário ou arte específica?"
                   value={formData.notes}
                   onChange={(e) =>
                     setFormData({ ...formData, notes: e.target.value })
                   }
-                  className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors resize-none"
+                  className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors resize-none disabled:bg-zinc-50 disabled:text-zinc-400"
                 />
               </div>
 
               <motion.div
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={status !== "loading" ? { scale: 1.01 } : {}}
+                whileTap={status !== "loading" ? { scale: 0.98 } : {}}
               >
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm py-4 rounded-xl hover:opacity-90 transition-all duration-300 shadow-lg shadow-[#D4AF37]/20"
+                  disabled={status === "loading"}
+                  className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm py-4 rounded-xl hover:opacity-90 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 transition-all duration-300 shadow-lg shadow-[#D4AF37]/20 disabled:opacity-75 disabled:cursor-not-allowed"
                 >
-                  <Send size={16} />
-                  Solicitar Agendamento
+                  {status === "loading" ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      Enviando solicitação...
+                    </>
+                  ) : (
+                    <>
+                      <Send size={16} />
+                      Solicitar agendamento
+                    </>
+                  )}
                 </button>
               </motion.div>
             </form>

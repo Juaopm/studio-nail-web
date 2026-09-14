@@ -36,7 +36,7 @@ export const Navbar: React.FC = () => {
               className={`transition-colors duration-200 relative py-1 ${
                 isActive(link.path)
                   ? "text-[#997A15] font-medium"
-                  : "text-zinc-600 hover:text-zinc-900"
+                  : "text-zinc-800 hover:text-zinc-900"
               }`}
             >
               {link.name}
@@ -58,7 +58,7 @@ export const Navbar: React.FC = () => {
               className="flex items-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 text-xs font-medium px-5 py-2.5 rounded-full shadow-md hover:opacity-90 transition-opacity"
             >
               <Calendar size={14} />
-              Agendar Horário
+              Agendar horário
             </Link>
           </motion.div>
         </div>
