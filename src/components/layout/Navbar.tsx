@@ -17,11 +17,23 @@ export const Navbar: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Função para lidar com o clique no link
+  const handleNavClick = (path: string, e: React.MouseEvent) => {
+    if (location.pathname === path) {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-zinc-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
+        <Link
+          to="/"
+          onClick={(e) => handleNavClick("/", e)}
+          className="flex items-center gap-2 group"
+        >
           <span className="font-['Pinyon_Script'] text-5xl sm:text-6xl text-[#D4AF37] tracking-wider drop-shadow-xs">
             Ma
           </span>
@@ -33,6 +45,7 @@ export const Navbar: React.FC = () => {
             <Link
               key={link.path}
               to={link.path}
+              onClick={(e) => handleNavClick(link.path, e)}
               className={`transition-colors duration-200 relative py-1 ${
                 isActive(link.path)
                   ? "text-[#997A15] font-medium"
@@ -55,6 +68,7 @@ export const Navbar: React.FC = () => {
           <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
             <Link
               to="/contato"
+              onClick={(e) => handleNavClick("/contato", e)}
               className="flex items-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 text-xs font-medium px-5 py-2.5 rounded-full shadow-md hover:opacity-90 transition-opacity"
             >
               <Calendar size={14} />
@@ -87,7 +101,10 @@ export const Navbar: React.FC = () => {
               <Link
                 key={link.path}
                 to={link.path}
-                onClick={() => setIsOpen(false)}
+                onClick={(e) => {
+                  handleNavClick(link.path, e);
+                  setIsOpen(false);
+                }}
                 className={`block text-base font-light transition-colors ${
                   isActive(link.path)
                     ? "text-[#997A15] font-medium"
@@ -100,7 +117,10 @@ export const Navbar: React.FC = () => {
             <div className="pt-2">
               <Link
                 to="/contato"
-                onClick={() => setIsOpen(false)}
+                onClick={(e) => {
+                  handleNavClick("/contato", e);
+                  setIsOpen(false);
+                }}
                 className="w-full flex items-center justify-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 text-sm font-medium py-3 rounded-xl shadow-md"
               >
                 <Calendar size={16} />

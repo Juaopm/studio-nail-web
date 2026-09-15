@@ -10,8 +10,8 @@ import {
 interface Testimonial {
   id: number;
   title: string;
-  imageUrl: string; // Foto da unha para a prévia
-  whatsappUrl: string; // Print do WhatsApp para abrir no modal
+  imageUrl: string;
+  whatsappUrl: string;
   altText: string;
 }
 
@@ -38,7 +38,7 @@ export const TestimonialsSection: React.FC = () => {
   const scroll = (direction: "left" | "right") => {
     if (scrollRef.current) {
       const { clientWidth } = scrollRef.current;
-      const offset = direction === "left" ? -clientWidth / 2 : clientWidth / 2;
+      const offset = direction === "left" ? -clientWidth : clientWidth;
       scrollRef.current.scrollBy({ left: offset, behavior: "smooth" });
     }
   };
@@ -76,14 +76,13 @@ export const TestimonialsSection: React.FC = () => {
           <span>Prova Social</span>
         </div>
         <h2 className="text-3xl sm:text-4xl font-light text-zinc-900 tracking-tight">
-          O que elas{" "}
+          O carinho de quem já viveu{" "}
           <span className="font-semibold bg-linear-to-r from-[#D4AF37] to-[#B89728] bg-clip-text text-transparent">
-            dizem por aí
+            essa experiência.
           </span>
         </h2>
         <p className="text-zinc-600 max-w-xl mx-auto font-light text-sm sm:text-base">
-          O carinho e a confiança de quem já viveu a experiência do nosso
-          estúdio, direto das conversas reais.
+          Confira alguns dos feedbacks que recebemos pelo WhatsApp.
         </p>
       </motion.div>
 
@@ -138,11 +137,11 @@ export const TestimonialsSection: React.FC = () => {
             ))}
           </div>
 
-          {/* MOBILE: Carrossel Horizontal Fluido com Botões de Apoio */}
-          <div className="md:hidden relative">
+          {/* MOBILE: Carrossel Centralizado (Um card por vez) */}
+          <div className="md:hidden w-full max-w-xs mx-auto relative">
             <div
               ref={scrollRef}
-              className="flex gap-5 overflow-x-auto pb-6 pt-2 px-2 snap-x snap-mandatory scrollbar-none"
+              className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-none py-2 px-1"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {testimonials.map((item) => (
@@ -151,7 +150,7 @@ export const TestimonialsSection: React.FC = () => {
                   onClick={() =>
                     setSelectedImage(item.whatsappUrl || item.imageUrl)
                   }
-                  className="shrink-0 w-72 bg-white p-3.5 pb-5 rounded-xl shadow-lg border border-zinc-200/85 snap-center rotate-1 cursor-pointer"
+                  className="w-full shrink-0 snap-center bg-white p-3.5 pb-5 rounded-xl shadow-lg border border-zinc-200/85 cursor-pointer"
                 >
                   <div className="relative aspect-3/4 rounded-lg overflow-hidden bg-zinc-100">
                     <img
@@ -162,7 +161,7 @@ export const TestimonialsSection: React.FC = () => {
                     />
                   </div>
                   <div className="mt-3 flex items-center justify-between px-1">
-                    <span className="text-[11px] font-medium text-zinc-700 truncate max-w-37.5">
+                    <span className="text-[11px] font-medium text-zinc-700 truncate max-w-50">
                       {item.title}
                     </span>
                     <span className="text-[10px] text-zinc-400 uppercase tracking-wider">
@@ -174,7 +173,7 @@ export const TestimonialsSection: React.FC = () => {
             </div>
 
             {/* Controles de Navegação Mobile */}
-            <div className="flex justify-center items-center gap-3 mt-4">
+            <div className="flex justify-center items-center gap-3 mt-6">
               <button
                 onClick={() => scroll("left")}
                 className="w-10 h-10 rounded-full bg-white border border-zinc-200 shadow-sm flex items-center justify-center text-zinc-600 hover:bg-[#D4AF37] hover:text-white transition-colors"
@@ -194,7 +193,7 @@ export const TestimonialsSection: React.FC = () => {
         </>
       )}
 
-      {/* Modal Lightbox para Ampliar o Print */}
+      {/* Modal Lightbox Limpo (Fecha ao clicar fora da imagem) */}
       <AnimatePresence>
         {selectedImage && (
           <motion.div
@@ -209,7 +208,7 @@ export const TestimonialsSection: React.FC = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative max-w-3xl w-full max-h-[90vh] flex items-center justify-center"
+              className="relative max-w-3xl w-full max-h-[90vh] flex items-center justify-center cursor-default"
             >
               <div className="relative inline-block max-h-[85vh] overflow-hidden rounded-xl shadow-2xl border border-zinc-800 bg-white p-2">
                 <img
@@ -218,13 +217,6 @@ export const TestimonialsSection: React.FC = () => {
                   className="max-h-[80vh] max-w-full block object-contain rounded-lg"
                 />
               </div>
-
-              <button
-                onClick={() => setSelectedImage(null)}
-                className="absolute top-2 right-2 text-xs text-zinc-400 hover:text-white bg-zinc-900/80 hover:bg-zinc-800 px-3.5 py-2 rounded-full border border-white/10 transition-colors z-10"
-              >
-                ✕ Fechar
-              </button>
             </motion.div>
           </motion.div>
         )}
