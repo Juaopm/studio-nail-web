@@ -1,51 +1,64 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageCircleHeart, ZoomIn } from "lucide-react";
+import {
+  MessageCircleHeart,
+  ZoomIn,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 interface Testimonial {
   id: number;
-  imageUrl: string;
+  title: string;
+  imageUrl: string; // Foto da unha para a prévia
+  whatsappUrl: string; // Print do WhatsApp para abrir no modal
   altText: string;
 }
 
-// Mock inicial estruturado exatamente no padrão que virá da API
-const MOCK_TESTIMONIALS: Testimonial[] = [
-  {
-    id: 1,
-    imageUrl:
-      "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=600&q=80",
-    altText: "Feedback de cliente via WhatsApp - Alongamento",
-  },
-  {
-    id: 2,
-    imageUrl:
-      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=600&q=80",
-    altText: "Feedback de cliente - Durabilidade",
-  },
-  {
-    id: 3,
-    imageUrl:
-      "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=600&q=80",
-    altText: "Feedback de cliente - Molde F1",
-  },
-  {
-    id: 4,
-    imageUrl:
-      "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=600&q=80",
-    altText: "Feedback de cliente - Elogio ao atendimento",
-  },
-];
-
 export const TestimonialsSection: React.FC = () => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  // Classes de rotação controlada e intencional para dar o aspecto de mural artesanal
-  const rotations = ["-rotate-2", "rotate-1", "-rotate-1.5", "rotate-2"];
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch("http://localhost:8080/api/testimonials")
+      .then((res) => res.json())
+      .then((data) => {
+        setTestimonials(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Erro ao carregar depoimentos:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const { clientWidth } = scrollRef.current;
+      const offset = direction === "left" ? -clientWidth / 2 : clientWidth / 2;
+      scrollRef.current.scrollBy({ left: offset, behavior: "smooth" });
+    }
+  };
+
+  // Classes de rotação controlada para o mural desktop
+  const rotations = [
+    "-rotate-2",
+    "rotate-1",
+    "-rotate-1.5",
+    "rotate-2",
+    "rotate-1",
+    "-rotate-1",
+  ];
   const offsets = [
     "translate-y-0",
     "translate-y-4",
     "-translate-y-2",
     "translate-y-3",
+    "translate-y-1",
+    "-translate-y-3",
   ];
 
   return (
@@ -74,73 +87,112 @@ export const TestimonialsSection: React.FC = () => {
         </p>
       </motion.div>
 
-      {/* DESKTOP & TABLET: Mural Estilizado (Quadro) */}
-      <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-8 items-center justify-items-center py-6">
-        {MOCK_TESTIMONIALS.map((item, index) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, y: 30, scale: 0.95 }}
-            whileInView={{ opacity: 1, y: 0, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-            whileHover={{ scale: 1.03, rotate: 0, zIndex: 10 }}
-            onClick={() => setSelectedImage(item.imageUrl)}
-            className={`relative group cursor-pointer bg-white p-3.5 pb-5 rounded-xl shadow-xl border border-zinc-200/80 transition-transform duration-300 w-full max-w-xs ${rotations[index % rotations.length]} ${offsets[index % offsets.length]}`}
-          >
-            {/* Imagem do Print */}
-            <div className="relative aspect-3/4 rounded-lg overflow-hidden bg-zinc-100">
-              <img
-                src={item.imageUrl}
-                alt={item.altText}
-                loading="lazy"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              {/* Overlay de Zoom Discreto */}
-              <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-[#D4AF37]">
-                  <ZoomIn size={18} />
+      {loading ? (
+        <div className="text-center py-12 text-zinc-400 font-light text-sm">
+          Carregando depoimentos...
+        </div>
+      ) : testimonials.length === 0 ? (
+        <div className="text-center py-12 text-zinc-400 font-light text-sm">
+          Nenhum depoimento cadastrado no momento.
+        </div>
+      ) : (
+        <>
+          {/* DESKTOP & TABLET: Mural Estilizado (Quadro) */}
+          <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-8 items-center justify-items-center py-6">
+            {testimonials.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: (index % 4) * 0.1 }}
+                whileHover={{ scale: 1.03, rotate: 0, zIndex: 10 }}
+                onClick={() =>
+                  setSelectedImage(item.whatsappUrl || item.imageUrl)
+                }
+                className={`relative group cursor-pointer bg-white p-3.5 pb-5 rounded-xl shadow-xl border border-zinc-200/85 transition-transform duration-300 w-full max-w-xs ${rotations[index % rotations.length]} ${offsets[index % offsets.length]}`}
+              >
+                <div className="relative aspect-3/4 rounded-lg overflow-hidden bg-zinc-100">
+                  <img
+                    src={item.imageUrl}
+                    alt={item.altText || item.title}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-white/90 shadow-md flex items-center justify-center text-[#D4AF37]">
+                      <ZoomIn size={18} />
+                    </div>
+                  </div>
                 </div>
-              </div>
+
+                <div className="mt-3 flex items-center justify-between px-1">
+                  <span className="text-[11px] font-medium text-zinc-700 truncate max-w-37.5">
+                    {item.title}
+                  </span>
+                  <span className="text-[10px] text-zinc-400 uppercase tracking-wider">
+                    Feedback
+                  </span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* MOBILE: Carrossel Horizontal Fluido com Botões de Apoio */}
+          <div className="md:hidden relative">
+            <div
+              ref={scrollRef}
+              className="flex gap-5 overflow-x-auto pb-6 pt-2 px-2 snap-x snap-mandatory scrollbar-none"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {testimonials.map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() =>
+                    setSelectedImage(item.whatsappUrl || item.imageUrl)
+                  }
+                  className="shrink-0 w-72 bg-white p-3.5 pb-5 rounded-xl shadow-lg border border-zinc-200/85 snap-center rotate-1 cursor-pointer"
+                >
+                  <div className="relative aspect-3/4 rounded-lg overflow-hidden bg-zinc-100">
+                    <img
+                      src={item.imageUrl}
+                      alt={item.altText || item.title}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="mt-3 flex items-center justify-between px-1">
+                    <span className="text-[11px] font-medium text-zinc-700 truncate max-w-37.5">
+                      {item.title}
+                    </span>
+                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider">
+                      Feedback
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            {/* Detalhe estético simulando borda inferior de foto/print */}
-            <div className="mt-3 text-center">
-              <span className="text-[11px] font-light text-zinc-400 tracking-wider uppercase">
-                Depoimento Real
-              </span>
+            {/* Controles de Navegação Mobile */}
+            <div className="flex justify-center items-center gap-3 mt-4">
+              <button
+                onClick={() => scroll("left")}
+                className="w-10 h-10 rounded-full bg-white border border-zinc-200 shadow-sm flex items-center justify-center text-zinc-600 hover:bg-[#D4AF37] hover:text-white transition-colors"
+                aria-label="Anterior"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                onClick={() => scroll("right")}
+                className="w-10 h-10 rounded-full bg-white border border-zinc-200 shadow-sm flex items-center justify-center text-zinc-600 hover:bg-[#D4AF37] hover:text-white transition-colors"
+                aria-label="Próximo"
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* MOBILE: Carrossel Horizontal Fluido */}
-      <div className="md:hidden flex overflow-x-auto gap-5 pb-6 pt-2 px-2 snap-x snap-mandatory scrollbar-none">
-        {MOCK_TESTIMONIALS.map((item, index) => (
-          <motion.div
-            key={item.id}
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-            onClick={() => setSelectedImage(item.imageUrl)}
-            className="shrink-0 w-72 bg-white p-3.5 pb-5 rounded-xl shadow-lg border border-zinc-200/80 snap-center rotate-1 cursor-pointer"
-          >
-            <div className="relative aspect-3/4 rounded-lg overflow-hidden bg-zinc-100">
-              <img
-                src={item.imageUrl}
-                alt={item.altText}
-                loading="lazy"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="mt-3 text-center">
-              <span className="text-[11px] font-light text-zinc-400 tracking-wider uppercase">
-                Depoimento Real
-              </span>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+          </div>
+        </>
+      )}
 
       {/* Modal Lightbox para Ampliar o Print */}
       <AnimatePresence>
