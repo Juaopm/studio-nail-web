@@ -1,53 +1,11 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import {
-  Calendar,
-  ArrowRight,
-  Sparkles,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Calendar, ArrowRight, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import perfilImg from "../assets/perfil.jpg";
+import { TestimonialsSection } from "../components/layout/TestimonialsSection";
 
 export const Home: React.FC = () => {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isDown, setIsDown] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeftState, setScrollLeftState] = useState(0);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!scrollRef.current) return;
-    setIsDown(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeftState(scrollRef.current.scrollLeft);
-  };
-
-  const handleMouseLeave = () => setIsDown(false);
-  const handleMouseUp = () => setIsDown(false);
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDown || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    scrollRef.current.scrollLeft = scrollLeftState - walk;
-  };
-
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const { clientWidth } = scrollRef.current;
-      const offset = direction === "left" ? -clientWidth / 2 : clientWidth / 2;
-      scrollRef.current.scrollBy({ left: offset, behavior: "smooth" });
-    }
-  };
-
-  const printFeedbackItems = Array.from({ length: 12 }, (_, index) => ({
-    id: index + 1,
-    title: `Depoimento de Cliente #${index + 1}`,
-    url: `https://images.unsplash.com/photo-${1500000000000 + index * 98765}?auto=format&fit=crop&w=600&q=80`,
-  }));
-
   return (
     <div className="flex flex-col min-h-full">
       {/* 1. Hero Section (Tela Cheia) */}
@@ -138,7 +96,7 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 2. Seção de Serviços Principais (Tela Cheia com Fade-in ao scrollar) */}
+      {/* 2. Seção de Serviços Principais */}
       <section className="relative min-h-[calc(100vh-80px)] flex items-center bg-white border-t border-zinc-100 py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-12">
           <motion.div
@@ -286,83 +244,8 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* 3. Carrossel de Prints (Tela Cheia com Fade-in ao scrollar) */}
-      <section className="relative min-h-[calc(100vh-80px)] flex items-center bg-linear-to-br from-zinc-900 via-zinc-950 to-zinc-900 text-white border-t border-[#D4AF37]/20 overflow-hidden py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full space-y-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="flex flex-col md:flex-row md:items-end justify-between gap-6"
-          >
-            <div className="space-y-3">
-              <h2 className="text-2xl sm:text-3xl font-light text-white">
-                O carinho de quem já viveu{" "}
-                <span className="font-semibold text-[#E5C158]">
-                  essa experiência.
-                </span>
-              </h2>
-              <p className="text-zinc-400 font-light text-sm max-w-md">
-                Confira alguns dos feedbacks que recebemos pelo WhatsApp.
-              </p>
-            </div>
-
-            <div className="hidden sm:flex items-center gap-3">
-              <button
-                onClick={() => scroll("left")}
-                className="w-12 h-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:bg-[#D4AF37] hover:text-zinc-950 transition-all cursor-pointer"
-                aria-label="Rolar para esquerda"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button
-                onClick={() => scroll("right")}
-                className="w-12 h-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-zinc-300 hover:bg-[#D4AF37] hover:text-zinc-950 transition-all cursor-pointer"
-                aria-label="Rolar para direita"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            ref={scrollRef}
-            onMouseDown={handleMouseDown}
-            onMouseLeave={handleMouseLeave}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            className="flex gap-6 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-none cursor-grab active:cursor-grabbing select-none"
-            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-          >
-            {printFeedbackItems.map((item) => (
-              <div
-                key={item.id}
-                className="snap-start shrink-0 w-72 sm:w-80 h-105 rounded-2xl bg-zinc-950 border-2 border-[#D4AF37]/30 shadow-2xl overflow-hidden relative group hover:border-[#D4AF37] pointer-events-none transition-colors duration-300"
-              >
-                <img
-                  src={item.url}
-                  alt={item.title}
-                  className="w-full h-full object-cover opacity-90 group-hover:opacity-100"
-                  draggable={false}
-                />
-                <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-zinc-950 via-zinc-950/40 to-transparent p-4 flex items-center justify-between">
-                  <span className="text-xs text-[#E5C158] font-medium uppercase tracking-wider">
-                    {item.title}
-                  </span>
-                  <span className="text-[10px] text-zinc-400 bg-zinc-900/80 px-2.5 py-1 rounded-full border border-zinc-700">
-                    WhatsApp
-                  </span>
-                </div>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+      {/* 3. Nova Seção de Mural de Prints / Prova Social */}
+      <TestimonialsSection />
     </div>
   );
 };
