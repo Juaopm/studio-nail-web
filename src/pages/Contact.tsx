@@ -35,6 +35,23 @@ export const Contact: React.FC = () => {
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
+  // Função para aplicar a máscara de telefone automaticamente: (99) 99999-9999
+  const formatPhone = (value: string) => {
+    const numbers = value.replace(/\D/g, "").slice(0, 11);
+    if (numbers.length <= 2) {
+      return numbers.length ? `(${numbers}` : "";
+    }
+    if (numbers.length <= 7) {
+      return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+    }
+    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
+  };
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhone(e.target.value);
+    setFormData({ ...formData, phone: formatted });
+  };
+
   const handleFetchAvailableTimes = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.date || !formData.name || !formData.phone) return;
@@ -255,7 +272,7 @@ export const Contact: React.FC = () => {
                 className="space-y-4"
               >
                 <h3 className="text-2xl font-light text-zinc-900">
-                  Pré-agendamento realizado!
+                  Pré-agendamento realizado! ✨
                 </h3>
 
                 <p className="text-zinc-600 font-light text-sm max-w-md mx-auto leading-relaxed">
@@ -334,8 +351,8 @@ export const Contact: React.FC = () => {
                     </span>
                   ) : (
                     <span>
-                      Não há horários disponíveis para esta data. Tente outro
-                      dia ou entre em contato pelo WhatsApp.
+                      Não há horários disponíveis para esta data. Lembre-se que
+                      o agendamento exige antecedência mínima de 24h.
                     </span>
                   )}
                 </div>
@@ -406,9 +423,8 @@ export const Contact: React.FC = () => {
                     disabled={status === "loading"}
                     placeholder="(51) 99999-9999"
                     value={formData.phone}
-                    onChange={(e) =>
-                      setFormData({ ...formData, phone: e.target.value })
-                    }
+                    onChange={handlePhoneChange}
+                    maxLength={15}
                     className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors disabled:bg-zinc-50 disabled:text-zinc-400"
                   />
                 </div>
@@ -450,6 +466,7 @@ export const Contact: React.FC = () => {
                   <input
                     type="date"
                     required
+                    min={new Date().toISOString().split("T")[0]}
                     disabled={status === "loading"}
                     value={formData.date}
                     onChange={(e) =>
