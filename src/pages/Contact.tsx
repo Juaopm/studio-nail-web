@@ -11,6 +11,16 @@ import {
   Calendar,
 } from "lucide-react";
 
+const SERVICE_IDS: Record<string, number> = {
+  "Molde F1": 1,
+  "Fibra de Vidro": 2,
+  Manutenção: 3,
+  "Banho de Gel": 4,
+  Blindagem: 5,
+  "Esmaltação em Gel Mãos": 6,
+  "Pé com Gel": 7,
+};
+
 export const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -20,37 +30,79 @@ export const Contact: React.FC = () => {
     time: "",
   });
 
-  // Estados de controle para a interação refinada
   const [step, setStep] = useState<"form" | "selecting-time">("form");
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // Simula a busca de horários no Spring Boot (GET /api/appointments/available-times)
-  const handleFetchAvailableTimes = (e: React.FormEvent) => {
+  const handleFetchAvailableTimes = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.date || !formData.name || !formData.phone) return;
 
     setStatus("loading");
+    setErrorMessage("");
 
-    setTimeout(() => {
-      // Exemplo simulado de horários livres retornados pelo back-end
-      // Futuramente, aqui virá a resposta real da API Spring Boot
-      const mockSlots = ["09:00", "11:30", "14:00", "16:30"];
-      setAvailableTimes(mockSlots);
+    try {
+      const serviceId = SERVICE_IDS[formData.service] || 2;
+      const response = await fetch(
+        `http://localhost:8080/api/appointments/available-times?serviceId=${serviceId}&date=${formData.date}`,
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao buscar horários disponíveis.");
+      }
+
+      const times: string[] = await response.json();
+      setAvailableTimes(times);
       setStep("selecting-time");
+    } catch (error) {
+      console.error(error);
+      setErrorMessage(
+        "Não foi possível carregar os horários. Verifique se o servidor está rodando.",
+      );
+    } finally {
       setStatus("idle");
-    }, 1000);
+    }
   };
 
-  // Simula o envio final do agendamento (POST /api/appointments)
-  const handleFinalSubmit = () => {
+  const handleFinalSubmit = async () => {
     if (!formData.time) return;
 
     setStatus("loading");
+    setErrorMessage("");
 
-    setTimeout(() => {
+    try {
+      const serviceId = SERVICE_IDS[formData.service] || 2;
+
+      const payload = {
+        serviceId: serviceId,
+        clientName: formData.name,
+        clientPhone: formData.phone,
+        date: formData.date,
+        time: formData.time,
+      };
+
+      const response = await fetch("http://localhost:8080/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "Erro ao realizar o pré-agendamento.");
+      }
+
       setStatus("success");
-    }, 1500);
+    } catch (error: any) {
+      console.error(error);
+      setErrorMessage(
+        error.message || "Ocorreu um erro ao salvar o agendamento.",
+      );
+      setStatus("idle");
+    }
   };
 
   const handleReset = () => {
@@ -64,6 +116,7 @@ export const Contact: React.FC = () => {
       time: "",
     });
     setAvailableTimes([]);
+    setErrorMessage("");
   };
 
   return (
@@ -157,8 +210,14 @@ export const Contact: React.FC = () => {
           </div>
         </div>
 
-        {/* Coluna Direita: Formulário Interativo com Escolha de Horários */}
+        {/* Coluna Direita: Formulário */}
         <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-2xl border border-zinc-200/80 shadow-md">
+          {errorMessage && (
+            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs">
+              {errorMessage}
+            </div>
+          )}
+
           {status === "success" ? (
             <motion.div
               initial={{ opacity: 0 }}
@@ -166,7 +225,6 @@ export const Contact: React.FC = () => {
               transition={{ duration: 0.4 }}
               className="py-16 text-center space-y-4"
             >
-              {/* Ícone de sucesso */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -186,7 +244,6 @@ export const Contact: React.FC = () => {
                 </motion.div>
               </motion.div>
 
-              {/* Conteúdo */}
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -198,17 +255,16 @@ export const Contact: React.FC = () => {
                 className="space-y-4"
               >
                 <h3 className="text-2xl font-light text-zinc-900">
-                  Pré-agendamento realizado!
+                  Pré-agendamento realizado! ✨
                 </h3>
 
-                <p className="text-zinc-600 font-light text-sm max-w-md mx-auto">
+                <p className="text-zinc-600 font-light text-sm max-w-md mx-auto leading-relaxed">
                   Seu horário foi reservado com sucesso. A profissional validará
                   sua solicitação em instantes e você receberá a confirmação
                   oficial por WhatsApp.
                 </p>
               </motion.div>
 
-              {/* Ações e mensagem final */}
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -235,7 +291,6 @@ export const Contact: React.FC = () => {
               </motion.div>
             </motion.div>
           ) : step === "selecting-time" ? (
-            /* ETAPA 2: Escolha do Horário Disponível */
             <div className="space-y-6">
               <div className="space-y-2">
                 <h3 className="text-lg font-medium text-zinc-900">
@@ -252,24 +307,28 @@ export const Contact: React.FC = () => {
 
               {availableTimes.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {availableTimes.map((slot) => (
-                    <button
-                      key={slot}
-                      type="button"
-                      onClick={() => setFormData({ ...formData, time: slot })}
-                      className={`py-3 px-4 rounded-xl text-sm font-medium border transition-all duration-200 ${
-                        formData.time === slot
-                          ? "bg-[#D4AF37] text-zinc-950 border-[#D4AF37] shadow-sm"
-                          : "border-zinc-200 text-zinc-700 hover:border-[#D4AF37] hover:bg-zinc-50"
-                      }`}
-                    >
-                      {slot}
-                    </button>
-                  ))}
+                  {availableTimes.map((slot) => {
+                    const formattedTime = slot.slice(0, 5); // Oculta os segundos (ex: 08:00:00 vira 08:00)
+                    return (
+                      <button
+                        key={slot}
+                        type="button"
+                        onClick={() => setFormData({ ...formData, time: slot })}
+                        className={`py-3 px-4 rounded-xl text-sm font-medium border transition-all duration-200 ${
+                          formData.time === slot
+                            ? "bg-[#D4AF37] text-zinc-950 border-[#D4AF37] shadow-sm"
+                            : "border-zinc-200 text-zinc-700 hover:border-[#D4AF37] hover:bg-zinc-50"
+                        }`}
+                      >
+                        {formattedTime}
+                      </button>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="py-8 text-center text-sm text-zinc-500 bg-zinc-50 rounded-xl border border-dashed border-zinc-200">
-                  Não há horários disponíveis para esta data. Tente outro dia.
+                  Não há horários disponíveis para esta data. O estúdio não abre
+                  aos domingos ou a data selecionada não possui vagas livres.
                 </div>
               )}
 
@@ -309,7 +368,6 @@ export const Contact: React.FC = () => {
               </div>
             </div>
           ) : (
-            /* ETAPA 1: Formulário Inicial de Dados e Data */
             <form onSubmit={handleFetchAvailableTimes} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
