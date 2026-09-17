@@ -255,7 +255,7 @@ export const Contact: React.FC = () => {
                 className="space-y-4"
               >
                 <h3 className="text-2xl font-light text-zinc-900">
-                  Pré-agendamento realizado! ✨
+                  Pré-agendamento realizado!
                 </h3>
 
                 <p className="text-zinc-600 font-light text-sm max-w-md mx-auto leading-relaxed">
@@ -308,7 +308,7 @@ export const Contact: React.FC = () => {
               {availableTimes.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {availableTimes.map((slot) => {
-                    const formattedTime = slot.slice(0, 5); // Oculta os segundos (ex: 08:00:00 vira 08:00)
+                    const formattedTime = slot.slice(0, 5);
                     return (
                       <button
                         key={slot}
@@ -326,9 +326,18 @@ export const Contact: React.FC = () => {
                   })}
                 </div>
               ) : (
-                <div className="py-8 text-center text-sm text-zinc-500 bg-zinc-50 rounded-xl border border-dashed border-zinc-200">
-                  Não há horários disponíveis para esta data. O estúdio não abre
-                  aos domingos ou a data selecionada não possui vagas livres.
+                <div className="py-8 text-center text-sm text-zinc-500 bg-zinc-50 rounded-xl border border-dashed border-zinc-200 px-4">
+                  {new Date(formData.date + "T00:00:00").getDay() === 0 ? (
+                    <span className="font-medium text-zinc-700">
+                      📅 O estúdio não abre aos domingos. Por favor, selecione
+                      uma data de segunda a sábado.
+                    </span>
+                  ) : (
+                    <span>
+                      Não há horários disponíveis para esta data. Tente outro
+                      dia ou entre em contato pelo WhatsApp.
+                    </span>
+                  )}
                 </div>
               )}
 
