@@ -8,6 +8,7 @@ import {
   Send,
   CheckCircle2,
   Loader2,
+  Calendar,
 } from "lucide-react";
 
 export const Contact: React.FC = () => {
@@ -16,17 +17,37 @@ export const Contact: React.FC = () => {
     phone: "",
     service: "Fibra de Vidro",
     date: "",
-    notes: "",
+    time: "",
   });
 
-  // Estados de controle para a interação refinada do botão
+  // Estados de controle para a interação refinada
+  const [step, setStep] = useState<"form" | "selecting-time">("form");
+  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Simula a busca de horários no Spring Boot (GET /api/appointments/available-times)
+  const handleFetchAvailableTimes = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.date || !formData.name || !formData.phone) return;
+
     setStatus("loading");
 
-    // Simulando o tempo de processamento (que futuramente será a chamada ao Spring Boot)
+    setTimeout(() => {
+      // Exemplo simulado de horários livres retornados pelo back-end
+      // Futuramente, aqui virá a resposta real da API Spring Boot
+      const mockSlots = ["09:00", "11:30", "14:00", "16:30"];
+      setAvailableTimes(mockSlots);
+      setStep("selecting-time");
+      setStatus("idle");
+    }, 1000);
+  };
+
+  // Simula o envio final do agendamento (POST /api/appointments)
+  const handleFinalSubmit = () => {
+    if (!formData.time) return;
+
+    setStatus("loading");
+
     setTimeout(() => {
       setStatus("success");
     }, 1500);
@@ -34,13 +55,15 @@ export const Contact: React.FC = () => {
 
   const handleReset = () => {
     setStatus("idle");
+    setStep("form");
     setFormData({
       name: "",
       phone: "",
       service: "Fibra de Vidro",
       date: "",
-      notes: "",
+      time: "",
     });
+    setAvailableTimes([]);
   };
 
   return (
@@ -134,7 +157,7 @@ export const Contact: React.FC = () => {
           </div>
         </div>
 
-        {/* Coluna Direita: Formulário de Solicitação */}
+        {/* Coluna Direita: Formulário Interativo com Escolha de Horários */}
         <div className="lg:col-span-7 bg-white p-8 sm:p-10 rounded-2xl border border-zinc-200/80 shadow-md">
           {status === "success" ? (
             <motion.div
@@ -175,12 +198,13 @@ export const Contact: React.FC = () => {
                 className="space-y-4"
               >
                 <h3 className="text-2xl font-light text-zinc-900">
-                  Solicitação recebida!
+                  Pré-agendamento realizado!
                 </h3>
 
                 <p className="text-zinc-600 font-light text-sm max-w-md mx-auto">
-                  Vamos verificar a disponibilidade da data escolhida e
-                  entraremos em contato para confirmar seu atendimento.
+                  Seu horário foi reservado com sucesso. A profissional validará
+                  sua solicitação em instantes e você receberá a confirmação
+                  oficial por WhatsApp.
                 </p>
               </motion.div>
 
@@ -210,8 +234,83 @@ export const Contact: React.FC = () => {
                 </p>
               </motion.div>
             </motion.div>
+          ) : step === "selecting-time" ? (
+            /* ETAPA 2: Escolha do Horário Disponível */
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h3 className="text-lg font-medium text-zinc-900">
+                  Selecione o horário desejado
+                </h3>
+                <p className="text-xs text-zinc-500">
+                  Horários livres para{" "}
+                  <span className="font-semibold text-zinc-800">
+                    {formData.date}
+                  </span>{" "}
+                  ({formData.service}):
+                </p>
+              </div>
+
+              {availableTimes.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {availableTimes.map((slot) => (
+                    <button
+                      key={slot}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, time: slot })}
+                      className={`py-3 px-4 rounded-xl text-sm font-medium border transition-all duration-200 ${
+                        formData.time === slot
+                          ? "bg-[#D4AF37] text-zinc-950 border-[#D4AF37] shadow-sm"
+                          : "border-zinc-200 text-zinc-700 hover:border-[#D4AF37] hover:bg-zinc-50"
+                      }`}
+                    >
+                      {slot}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="py-8 text-center text-sm text-zinc-500 bg-zinc-50 rounded-xl border border-dashed border-zinc-200">
+                  Não há horários disponíveis para esta data. Tente outro dia.
+                </div>
+              )}
+
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setStep("form")}
+                  className="w-1/3 py-3 rounded-xl border border-zinc-200 text-zinc-600 text-sm font-medium hover:bg-zinc-50 transition-colors"
+                >
+                  Voltar
+                </button>
+
+                <motion.button
+                  type="button"
+                  disabled={!formData.time || status === "loading"}
+                  onClick={handleFinalSubmit}
+                  whileHover={
+                    formData.time && status !== "loading" ? { scale: 1.01 } : {}
+                  }
+                  whileTap={
+                    formData.time && status !== "loading" ? { scale: 0.98 } : {}
+                  }
+                  className="w-2/3 flex items-center justify-center gap-2 bg-linear-to-r from-[#D4AF37] to-[#B89728] text-zinc-950 font-medium text-sm py-3 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all duration-300 shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {status === "loading" ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      Reservando horário...
+                    </>
+                  ) : (
+                    <>
+                      <Send size={16} />
+                      Solicitar agendamento
+                    </>
+                  )}
+                </motion.button>
+              </div>
+            </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-6">
+            /* ETAPA 1: Formulário Inicial de Dados e Data */
+            <form onSubmit={handleFetchAvailableTimes} className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="block text-xs font-medium text-zinc-700 uppercase tracking-wider">
@@ -285,7 +384,6 @@ export const Contact: React.FC = () => {
                     type="date"
                     required
                     disabled={status === "loading"}
-                    placeholder="Selecione a data desejada"
                     value={formData.date}
                     onChange={(e) =>
                       setFormData({ ...formData, date: e.target.value })
@@ -293,22 +391,6 @@ export const Contact: React.FC = () => {
                     className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors disabled:bg-zinc-50 disabled:text-zinc-400"
                   />
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <label className="block text-xs font-medium text-zinc-700 uppercase tracking-wider">
-                  Observações (Opcional)
-                </label>
-                <textarea
-                  rows={4}
-                  disabled={status === "loading"}
-                  placeholder="Tem alguma preferência de horário ou arte específica?"
-                  value={formData.notes}
-                  onChange={(e) =>
-                    setFormData({ ...formData, notes: e.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-xl border border-zinc-200 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors resize-none disabled:bg-zinc-50 disabled:text-zinc-400"
-                />
               </div>
 
               <motion.div
@@ -323,12 +405,12 @@ export const Contact: React.FC = () => {
                   {status === "loading" ? (
                     <>
                       <Loader2 size={16} className="animate-spin" />
-                      Enviando solicitação...
+                      Buscando horários livres...
                     </>
                   ) : (
                     <>
-                      <Send size={16} />
-                      Solicitar agendamento
+                      <Calendar size={16} />
+                      Ver horários disponíveis
                     </>
                   )}
                 </button>
