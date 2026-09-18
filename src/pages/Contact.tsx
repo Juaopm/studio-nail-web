@@ -35,7 +35,6 @@ export const Contact: React.FC = () => {
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Função para aplicar a máscara de telefone automaticamente: (99) 99999-9999
   const formatPhone = (value: string) => {
     const numbers = value.replace(/\D/g, "").slice(0, 11);
     if (numbers.length <= 2) {
@@ -240,7 +239,7 @@ export const Contact: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.4 }}
-              className="py-16 text-center space-y-4"
+              className="py-12 text-center space-y-6"
             >
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -248,64 +247,60 @@ export const Contact: React.FC = () => {
                 transition={{ duration: 0.35, ease: "easeOut" }}
                 className="w-16 h-16 bg-[#E5C158]/15 text-[#997A15] rounded-full flex items-center justify-center mx-auto"
               >
-                <motion.div
-                  initial={{ scale: 0.6, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{
-                    duration: 0.3,
-                    delay: 0.15,
-                    ease: "easeOut",
-                  }}
-                >
-                  <CheckCircle2 size={32} />
-                </motion.div>
+                <CheckCircle2 size={32} />
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.35,
-                  delay: 0.25,
-                  ease: "easeOut",
-                }}
-                className="space-y-4"
-              >
+              <div className="space-y-3">
                 <h3 className="text-2xl font-light text-zinc-900">
                   Pré-agendamento realizado! ✨
                 </h3>
-
                 <p className="text-zinc-600 font-light text-sm max-w-md mx-auto leading-relaxed">
-                  Seu horário foi reservado com sucesso. A profissional validará
-                  sua solicitação em instantes e você receberá a confirmação
-                  oficial por WhatsApp.
+                  Seu horário foi guardado no sistema. Para agilizar a
+                  validação, envie os dados diretamente para o WhatsApp da
+                  profissional:
                 </p>
-              </motion.div>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.35,
-                  delay: 0.4,
-                  ease: "easeOut",
-                }}
-                className="flex flex-col items-center gap-4"
-              >
+              {/* Botão de Envio Direto via WhatsApp */}
+              <div className="pt-2">
+                {(() => {
+                  const whatsappMessage = encodeURIComponent(
+                    `✨ *Nova Solicitação de Agendamento*!\n\n` +
+                      `🧑 *Cliente:* ${formData.name}\n` +
+                      `💅 *Serviço:* ${formData.service}\n` +
+                      `🗓️ *Data:* ${formData.date}\n` +
+                      `🕐 *Horário:* ${formData.time}\n\n` +
+                      `Olá! Gostaria de confirmar este horário.`,
+                  );
+                  const whatsappUrl = `https://wa.me/5551994882339?text=${whatsappMessage}`;
+
+                  return (
+                    <motion.a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl bg-green-500 text-white font-medium text-sm shadow-md hover:bg-green-600 transition-all duration-300 w-full sm:w-auto"
+                    >
+                      <MessageCircle size={18} />
+                      Enviar detalhes para o WhatsApp
+                    </motion.a>
+                  );
+                })()}
+              </div>
+
+              <div className="flex flex-col items-center gap-4 pt-4 border-t border-zinc-100">
                 <motion.button
                   onClick={handleReset}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="mt-4 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-zinc-200 bg-white text-[#997A15] text-xs font-medium uppercase tracking-wider hover:border-[#D4AF37] hover:bg-[#E5C158]/10 transition-all duration-300"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-zinc-200 bg-white text-[#997A15] text-xs font-medium uppercase tracking-wider hover:border-[#D4AF37] hover:bg-[#E5C158]/10 transition-all duration-300"
                 >
                   <span className="text-base leading-none">＋</span>
                   Enviar nova solicitação
                 </motion.button>
-
-                <p className="text-xs text-zinc-400 font-light italic">
-                  Será um prazer cuidar de você. ✨
-                </p>
-              </motion.div>
+              </div>
             </motion.div>
           ) : step === "selecting-time" ? (
             <div className="space-y-6">
