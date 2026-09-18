@@ -30,6 +30,7 @@ export const Contact: React.FC = () => {
     time: "",
   });
 
+  const [createdAppointment, setCreatedAppointment] = useState<any>(null);
   const [step, setStep] = useState<"form" | "selecting-time">("form");
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [status, setStatus] = useState<"idle" | "loading" | "success">("idle");
@@ -111,6 +112,8 @@ export const Contact: React.FC = () => {
         throw new Error(errorText || "Erro ao realizar o pré-agendamento.");
       }
 
+      const savedAppointment = await response.json();
+      setCreatedAppointment(savedAppointment);
       setStatus("success");
     } catch (error: any) {
       console.error(error);
@@ -132,6 +135,7 @@ export const Contact: React.FC = () => {
       time: "",
     });
     setAvailableTimes([]);
+    setCreatedAppointment(null);
     setErrorMessage("");
   };
 
@@ -261,16 +265,27 @@ export const Contact: React.FC = () => {
                 </p>
               </div>
 
-              {/* Botão de Envio Direto via WhatsApp */}
+              {/* Botão de Envio Direto via WhatsApp com links de controle por token */}
               <div className="pt-2">
                 {(() => {
+                  const token = createdAppointment?.confirmationToken || "";
+                  const baseUrl =
+                    "http://localhost:8080/api/appointments/token";
+
                   const whatsappMessage = encodeURIComponent(
-                    `✨ *Nova Solicitação de Agendamento*!\n\n` +
-                      `🧑 *Cliente:* ${formData.name}\n` +
-                      `💅 *Serviço:* ${formData.service}\n` +
-                      `🗓️ *Data:* ${formData.date}\n` +
-                      `🕐 *Horário:* ${formData.time}\n\n` +
-                      `Olá! Gostaria de confirmar este horário.`,
+                    `*Nova Solicitação de Agendamento*!\n\n` +
+                      `*Cliente:* ${formData.name}\n` +
+                      `*Serviço:* ${formData.service}\n` +
+                      `*Data:* ${formData.date}\n` +
+                      `*Horário:* ${formData.time}\n\n` +
+                      `Olá! Gostaria de confirmar este horário.\n\n` +
+                      `Clique na opção desejada:\n\n` +
+                      `✅ *[ CONFIRMAR ]*\n` +
+                      `${baseUrl}/${token}/confirmar\n\n` +
+                      `❌ *[ RECUSAR ]*\n` +
+                      `${baseUrl}/${token}/recusar\n\n` +
+                      `🔄 *[ REAGENDAR ]*\n` +
+                      `${baseUrl}/${token}/reagendar`,
                   );
                   const whatsappUrl = `https://wa.me/5551994882339?text=${whatsappMessage}`;
 
